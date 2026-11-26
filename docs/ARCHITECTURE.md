@@ -26,7 +26,7 @@
 | Pi RGB | RGB | 외부 인원(앞좌석 보완) 감지 → C에 보고 | Wi-Fi | `config/node_rgb.yaml` (예정) |
 | Pi C | 없음 | 보고 종합 → 최종 판정 → 화면·음성·신호등 | Wi-Fi | `config/hub_c.yaml` |
 
-- **4대 모두 같은 코드를 씁니다.** 각 보드가 무슨 일을 할지는 실행할 때 주는 **설정 파일**로 정합니다.
+- **4대 모두 같은 코드를 씁니다.** 각 보드가 무슨 일을 할지는 실행할 때 주는 **설정 파일**로 정하고, 설치는 역할에 필요한 것만 합니다(§7).
   ```
   python -m psafe --config config/node_a.yaml    # Pi A
   python -m psafe --config config/hub_c.yaml     # Pi C
@@ -57,11 +57,11 @@
 
 | 단계 | 하는 일 | 코드 위치 |
 |---|---|---|
-| Source | 카메라에서 프레임을 가져옴 | `sources/` |
-| Detector | YOLO로 사람을 찾음 (ONNX, TFLite/Coral) | `detectors/` |
-| Health | 화면이 너무 어둡거나 밝거나, 멈췄거나, 가려졌는지 검사 | `safety/health.py` |
-| FSM | 위 결과를 모아 "내 판단" 상태를 정함 | `safety/fsm.py` |
-| Link | 판단을 C로 보내고, C의 요청을 받음 | `link/` |
+| Source | 카메라에서 프레임을 가져옴 | `node/sources/` |
+| Detector | YOLO로 사람을 찾음 (ONNX, TFLite/Coral) | `node/detectors/` |
+| Health | 화면이 너무 어둡거나 밝거나, 멈췄거나, 가려졌는지 검사 | `node/health.py` |
+| FSM | 위 결과를 모아 "내 판단" 상태를 정함 | `node/fsm.py` |
+| Link | 판단을 C로 보내고, C의 요청을 받음 | `node/link.py` (메시지 형식은 `common/`) |
 
 각 단계는 **부품처럼 갈아 끼울 수 있습니다.** 모델을 바꿔도 Detector만, 카메라를 바꿔도 Source만 바꾸면 됩니다.
 
@@ -102,7 +102,7 @@ C는 보고를 그대로 믿지 않고 세 가지를 확인합니다.
 | `CHECKING` | 확인 중 | 사람은 안 보이지만 아직 확정 전 |
 | `EMPTY` | 비었음 | 모두가 신선한 근거로 비었다고 하고, CONFIRM까지 통과 |
 
-코드 위치: `hub.py`(C 실행), `safety/aggregator.py`(종합), `core/verdict.py`(판정 종류), `safety/confirm.py`(재확인).
+코드 위치: `hub/`(C 실행, 종합), `common/verdict.py`(판정 종류), `node/confirm.py`(카메라 Pi 쪽 재확인 응답).
 
 ---
 
@@ -114,7 +114,7 @@ C는 보고를 그대로 믿지 않고 세 가지를 확인합니다.
              └──▶ 신호등 (ESP32)
 ```
 
-세 출력은 모두 같은 판정을 받습니다(`outputs/verdict_api.py`의 `VerdictOutput`). 새 출력을 만들 때는 이 틀을 따르기만 하면 되고, 판정 로직은 몰라도 됩니다.
+세 출력은 모두 같은 판정을 받습니다(`ui/`의 `VerdictOutput`). 새 출력을 만들 때는 이 틀을 따르기만 하면 되고, 판정 로직은 몰라도 됩니다.
 
 ### 판정 → 화면·신호등 표시 (제안, 팀 확정 필요)
 
@@ -172,35 +172,98 @@ A·B: 일정 시간 사람이 없음 → `CLEAR` → C: `CHECKING` 상태에서 
 
 ---
 
-## 7. 코드 지도
+## 7. 코드 구조와 배포 규칙 (중요)
+
+### 7.1 폴더 = 아키텍처 그림의 상자
+
+레포는 하나이고, `src/psafe/` 아래를 **어느 Pi에서 도는 코드인지**로 나눕니다.
 
 ```
 src/psafe/
-├─ sources/     영상 입력 (카메라, 영상 파일, 가상 시나리오)
-├─ detectors/   YOLO 검출 (ONNX, TFLite/Coral)
-├─ safety/      판단 로직: health, fsm, confirm, aggregator   ← 핵심
-├─ link/        보드 간 통신 (UDP + JSON)                     ← 핵심
-├─ core/        공통 자료형, 판정 종류, 설정                    ← 핵심
-├─ outputs/     출력: 콘솔, 신호등(ESP32), 화면·음성·관리자 알림(예정)
-├─ hub.py       Pi C 실행
-├─ sim.py       하드웨어 없이 여러 보드를 한 PC에서 시뮬레이션
-└─ tools/       측정 도구 (벤치마크, 카메라·통신·Coral 점검)
-config/         보드별 설정 파일
-scenarios/      자동 시험 시나리오
-tests/          자동 테스트
+├─ common/    모든 Pi 공통: 메시지 형식, 보드 간 통신(UDP), 시계, 설정, 판정 종류
+├─ node/      Pi A·B·RGB: 영상 입력 → YOLO → 화면 상태 검사 → 내 판단(FSM) → C로 보고
+├─ hub/       Pi C: 보고 받기 → 신선도 검사 → 종합 → 최종 판정
+├─ ui/        Pi C: 출력. 터치스크린 · 음성 · 신호등(ESP32) · 관리자 알림(HTTP)
+├─ sim/       개발용: 여러 보드를 PC 한 대에서 시뮬레이션 (Pi에 배포하지 않음)
+└─ tools/     개발·측정 도구: 벤치마크, 카메라·통신·Coral 점검
+firmware/esp32/   신호등 ESP32 펌웨어
+config/           보드별 설정 파일 (node_a.yaml, node_b.yaml, node_rgb.yaml, hub_c.yaml)
+scenarios/        자동 시험 시나리오
+tests/            자동 테스트 (common · node · hub · ui · 통합)
 ```
+
+| 폴더 | 들어가는 것 | 도는 곳 |
+|---|---|---|
+| `common/` | 메시지 형식(Report·Control), UDP 전송, 시계, 설정 읽기, 판정 종류(EMPTY/OCCUPIED/CHECKING/UNKNOWN) | 4대 모두 |
+| `node/` | Source, Detector(ONNX, TFLite/Coral), Health, FSM, 재확인(CONFIRM) 응답, 보고 송신 | Pi A·B·RGB |
+| `hub/` | 노드 수신 관리, 신선도 검사, 종합(aggregator), 판정 주기 실행 | Pi C |
+| `ui/` | `VerdictOutput` 틀과 출력들: 콘솔, 신호등(ESP32 프로토콜), 화면, 음성, 관리자 알림 | Pi C |
+
+### 7.2 지켜야 할 규칙
+
+```
+ node ──▶ common ◀── hub ──(VerdictOutput 틀로만)──▶ ui ──▶ common
+```
+
+1. **`node`와 `hub`·`ui`는 서로 import하지 않습니다.** 양쪽에 필요한 것은 `common`으로 옮깁니다.
+2. **메시지 형식은 `common`에만 둡니다.** 보내는 쪽(node)과 받는 쪽(hub)이 반드시 같은 코드를 써야 하기 때문입니다. 복사본을 만들지 않습니다.
+3. **`hub`는 `ui`를 `VerdictOutput` 틀로만 부릅니다.** 화면·음성 같은 개별 출력을 hub가 직접 알지 않으므로, 출력을 추가하거나 바꿔도 판정 코드는 그대로입니다.
+4. **`common`을 바꾸면 4대 모두 영향을 받습니다.** 테스트를 통과한 뒤 4대를 같은 커밋으로 한꺼번에 업데이트합니다.
+
+### 7.3 각 Pi가 받는 것: 코드는 통째로, 설치는 역할별로
+
+4대 모두 **같은 레포를 통째로 받고(`git clone`), 설치할 때 자기 역할에 필요한 것만** 설치합니다. 어떤 역할로 돌지는 실행할 때 주는 설정 파일이 정합니다.
+
+| 보드 | 실제로 쓰는 코드 | 설치 | 실행 |
+|---|---|---|---|
+| Pi A · B · RGB | `common` + `node` | `pip install -e ".[node]"` | `python -m psafe --config config/node_a.yaml` |
+| Coral을 꽂은 카메라 Pi | `common` + `node` | `pip install -e ".[node,tflite]" -c requirements/tpu-py312.txt` (Python 3.12) | 위와 같음 (설정에서 Coral 검출기 선택) |
+| Pi C | `common` + `hub` + `ui` | `pip install -e ".[hub,ui]"` | `python -m psafe --config config/hub_c.yaml` |
+| 개발 PC · CI | 전부 | `pip install -e ".[dev,node,hub,ui]"` | 테스트 · 시뮬레이션 |
+
+설치 그룹별 라이브러리:
+
+| 그룹 | 라이브러리 | 이유 |
+|---|---|---|
+| 기본 (모두) | numpy, pyyaml | `common`이 씀 |
+| `node` | opencv-python-headless, onnxruntime | 영상 처리와 YOLO 추론 |
+| `tflite` | tflite-runtime (Python 3.12, numpy<2) | Coral |
+| `hub` | (추가 없음) | 판정은 순수 Python |
+| `ui` | pyserial (+ 화면·관리자 알림용 라이브러리, 정해지면 추가) | 신호등 ESP32, 출력 |
+
+**Pi C에는 OpenCV나 YOLO 런타임이 설치되지 않습니다.** 판정과 화면만 하므로 가볍게 유지됩니다.
+
+**폴더 일부만 받지(sparse checkout) 않는 이유**
+- `common`은 어차피 모든 Pi에 필요합니다.
+- 4대가 **같은 커밋**인지 `git rev-parse --short HEAD` 한 줄로 확인할 수 있어야 합니다. 일부만 받으면 이 확인이 어려워집니다.
+- 받지 않은 폴더의 코드는 import되지 않으므로 실행에 영향이 없습니다. 차이는 설치되는 라이브러리뿐이고, 그건 설치 그룹으로 나눕니다.
+
+### 7.4 배포 순서
+
+1. 개발 PC에서 테스트 통과(CI 초록불) 후 main에 머지
+2. 각 Pi에서 `git pull` 후 `git rev-parse --short HEAD`로 4대가 같은 커밋인지 확인
+3. 설치 그룹이 바뀌었으면 위 표의 설치 명령을 다시 실행
+4. 서비스 재시작 (자동 실행 설정은 추후 추가)
+
+### 7.5 이전 진행 상황
+
+사전 MVP 코드는 한 패키지(`core/`, `link/`, `safety/`, `sources/`, `detectors/`, `outputs/`) 구조였습니다. 위 구조로 **한 층씩** 옮기며, 단계마다 테스트를 함께 옮겨 CI로 확인합니다.
+
+| 단계 | 내용 | 상태 |
+|---|---|---|
+| 1 | `common` + 테스트 | 예정 |
+| 2 | `node` + 테스트 · 시나리오 | 예정 |
+| 3 | `hub` + 테스트 | 예정 |
+| 4 | `ui` (콘솔, 신호등) + 테스트 | 예정 |
+| 5 | `sim` · `tools` + 통합 테스트 | 예정 |
+| 6~ | 새 기능: RGB 노드, picamera2 입력, 화면, 음성, 관리자 알림 | 예정 |
 
 ---
 
-## 8. 함께 일하는 방법
+## 8. 작업 방식
 
-| 영역 | 누가 | 이유 |
-|---|---|---|
-| `safety/`, `link/`, `core/` | 핵심 담당자 리뷰 필수 (CODEOWNERS) | 바꾸면 안전 판단 전체가 달라짐 |
-| `outputs/` (화면, 음성), `sources/` (picamera2), `firmware/`, 모델 학습, `config/` | 누구나 | 정해진 틀(인터페이스)만 따르면 됨 |
-
-- 모든 변경은 **PR**로 올립니다. main에 직접 올리지 않습니다.
-- PR을 올리면 **CI가 자동 테스트와 시뮬레이션 시나리오를 돌립니다.** 안전 규칙(예: "사람이 있었는데 비었음이 나간 적 없음")을 깨면 빨간불이 들어옵니다.
+- 변경은 **브랜치 → PR → 머지** 순서로 합니다. 한 PR에는 한 가지 일만 담습니다.
+- PR을 올리면 **CI가 자동 테스트와 시뮬레이션 시나리오를 돌립니다** (x86 · ARM64 × Python 3.12 · 3.13). 안전 규칙(예: "사람이 있었는데 비었음이 나간 적 없음")을 깨면 빨간불이 들어옵니다.
 - 해야 할 일과 열린 결정은 **Issue**로 관리합니다.
 
 ---

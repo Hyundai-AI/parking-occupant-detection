@@ -169,7 +169,7 @@ Raspberry Pi 4와 고사양 PC에서 동일한 모델과 입력 데이터를 사
 | 문서 | 내용 |
 | --- | --- |
 | [DECISIONS.md](./DECISIONS.md) | 기술 및 설계 의사결정, 결정 근거, 검증 항목, 후속 작업, 변경 이력 |
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템 구조: Pi 4대의 역할과 연결, 판단 원칙, 상태와 판정, 출력·관리자 알림, 아직 정하지 않은 항목 |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템 구조: Pi 4대의 역할과 연결, 판단 원칙, 상태와 판정, 출력·관리자 알림, **코드 폴더 구조와 Pi별 설치·배포 규칙**, 아직 정하지 않은 항목 |
 | [docs/EXPERIMENTS.md](./docs/EXPERIMENTS.md) | 엣지 케이스와 실험 기록: Pi 4 추론 성능, ESP32 워치독, 보드 간 통신(UDP 채택, Wi-Fi 지연) |
 | [docs/coral/edge_tpu_research.md](./docs/coral/edge_tpu_research.md) | 비교군 모델과 Edge TPU INT8 변환 조사, Pi 4 + Coral 실행 제약 |
 | [docs/coral/coral_sw_design.md](./docs/coral/coral_sw_design.md) | Coral 소프트웨어 설계: 변환·배포 파이프라인, 검출기 구조, 시험 계획과 현재 상태 |
