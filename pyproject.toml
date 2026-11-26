@@ -15,7 +15,14 @@ dependencies = [
 
 [project.optional-dependencies]
 dev = ["pytest"]
-# node / hub / ui 그룹은 각 계층을 구성할 때 추가한다
+# 카메라 Pi (A·B·RGB): 영상 처리와 YOLO 추론.
+# Pi에는 화면이 없으므로 headless. 개발 PC에서 화면 표시(viewer)가 필요하면 opencv-python을 따로 설치한다.
+node = ["opencv-python-headless", "onnxruntime"]
+# Coral 카메라 Pi (Python 3.12): pip install -e ".[node,tflite]" -c requirements/tpu-py312.txt
+tflite = ["tflite-runtime"]
+# 최신 Python / Windows에서 TFLite 실행 (Edge TPU delegate 호환은 미검증)
+litert = ["ai-edge-litert"]
+# hub / ui 그룹은 각 계층을 구성할 때 추가한다
 
 [tool.setuptools.packages.find]
 where = ["src"]
