@@ -35,6 +35,7 @@
 ## 3. 시스템 아키텍처
 
 아래는 현재 설계 단계의 개념도이며, 카메라 수량 및 통신 방식은 실험 결과에 따라 변경될 수 있습니다.
+보드별 역할, 판단 원칙, 상태 전이와 판정 규칙은 [시스템 구조 문서](./docs/ARCHITECTURE.md)에 정리되어 있습니다.
 
 ```mermaid
 flowchart TD
@@ -127,7 +128,7 @@ Raspberry Pi 4와 고사양 PC에서 동일한 모델과 입력 데이터를 사
 
 추가적으로 단일/다중 카메라, 차량 크기, 선팅, 유리창 개방 여부, NIR 조명, 탑승 자세 및 가림 조건에 따른 감지 성능을 비교합니다.
 
-> 정량적 실험 결과는 측정 완료 후 추가합니다. 모델의 미검출만으로 안전을 보장할 수 없으므로 미검출률 및 판단 불가 상황을 중점적으로 검증합니다.
+> 정량적 실험 결과는 측정 완료 후 추가합니다. 사전 MVP 단계의 Pi 4 추론 성능과 통신 실험 결과는 [실험 기록](./docs/EXPERIMENTS.md)에 있습니다. 모델의 미검출만으로 안전을 보장할 수 없으므로 미검출률 및 판단 불가 상황을 중점적으로 검증합니다.
 
 ## 7. User Interface & Safety
 
@@ -165,7 +166,13 @@ Raspberry Pi 4와 고사양 PC에서 동일한 모델과 입력 데이터를 사
 
 ## 10. Project Documents
 
-- [DECISIONS.md](./DECISIONS.md) — 기술 및 설계 의사결정, 결정 근거, 검증 항목, 후속 작업, 변경 이력
+| 문서 | 내용 |
+| --- | --- |
+| [DECISIONS.md](./DECISIONS.md) | 기술 및 설계 의사결정, 결정 근거, 검증 항목, 후속 작업, 변경 이력 |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템 구조: Pi 4대의 역할과 연결, 판단 원칙, 상태와 판정, 출력·관리자 알림, 아직 정하지 않은 항목 |
+| [docs/EXPERIMENTS.md](./docs/EXPERIMENTS.md) | 엣지 케이스와 실험 기록: Pi 4 추론 성능, ESP32 워치독, 보드 간 통신(UDP 채택, Wi-Fi 지연) |
+| [docs/coral/edge_tpu_research.md](./docs/coral/edge_tpu_research.md) | 비교군 모델과 Edge TPU INT8 변환 조사, Pi 4 + Coral 실행 제약 |
+| [docs/coral/coral_sw_design.md](./docs/coral/coral_sw_design.md) | Coral 소프트웨어 설계: 변환·배포 파이프라인, 검출기 구조, 시험 계획과 현재 상태 |
 
 ---
 
