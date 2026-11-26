@@ -2,6 +2,7 @@ from abc import ABC, abstractmethod
 
 from psafe.common.packets import Decision, FrameDetections, FramePacket
 from psafe.common.registry import Registry
+from psafe.common.verdict import Verdict
 
 
 class Output(ABC):
@@ -31,3 +32,26 @@ class Output(ABC):
 
 
 OUTPUTS: Registry[Output] = Registry("output")
+
+
+class VerdictOutput(ABC):
+    """Pi C의 최종 판정(Verdict)을 받아 보여 준다. 화면·음성·신호등·관리자 알림이 이 틀을 따른다.
+
+    show()   하트비트마다(200 ms) 호출된다. 바뀔 때만이 아니다. 가볍고 막히면 안 된다.
+    poll()   선택. 메인 스레드에서 호출된다 (GUI용). False = 종료 요청.
+
+    hub는 이 틀과 등록부(VERDICT_OUTPUTS)만 알고, 구현체는 ui에 있다 (docs/ARCHITECTURE.md §7.2).
+    """
+
+    def open(self) -> None: ...
+
+    @abstractmethod
+    def show(self, verdict: Verdict) -> None: ...
+
+    def poll(self) -> bool:
+        return True
+
+    def close(self) -> None: ...
+
+
+VERDICT_OUTPUTS: Registry[VerdictOutput] = Registry("verdict output")

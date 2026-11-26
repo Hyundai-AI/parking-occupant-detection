@@ -114,7 +114,7 @@ C는 보고를 그대로 믿지 않고 세 가지를 확인합니다.
              └──▶ 신호등 (ESP32)
 ```
 
-세 출력은 모두 같은 판정을 받습니다(`ui/`의 `VerdictOutput`). 새 출력을 만들 때는 이 틀을 따르기만 하면 되고, 판정 로직은 몰라도 됩니다.
+세 출력은 모두 같은 판정을 받습니다. 틀(`VerdictOutput`)은 `common/output_api.py`에, 구현체는 `ui/`에 있습니다. 새 출력을 만들 때는 이 틀을 따르기만 하면 되고, 판정 로직은 몰라도 됩니다.
 
 ### 판정 → 화면·신호등 표시 (제안, 팀 확정 필요)
 
@@ -194,20 +194,22 @@ tests/            자동 테스트 (common · node · hub · ui · 통합)
 
 | 폴더 | 들어가는 것 | 도는 곳 |
 |---|---|---|
-| `common/` | 메시지 형식(Report·Control), UDP 전송, 시계, 설정 읽기, 판정 종류(EMPTY/OCCUPIED/CHECKING/UNKNOWN) | 4대 모두 |
+| `common/` | 메시지 형식(Report·Control), UDP 전송, 시계, 설정 읽기, 판정 종류(EMPTY/OCCUPIED/CHECKING/UNKNOWN), 출력 틀(Output·VerdictOutput) | 4대 모두 |
 | `node/` | Source, Detector(ONNX, TFLite/Coral), Health, FSM, 재확인(CONFIRM) 응답, 보고 송신 | Pi A·B·RGB |
 | `hub/` | 노드 수신 관리, 신선도 검사, 종합(aggregator), 판정 주기 실행 | Pi C |
-| `ui/` | `VerdictOutput` 틀과 출력들: 콘솔, 신호등(ESP32 프로토콜), 화면, 음성, 관리자 알림 | Pi C |
+| `ui/` | 출력 구현체: 판정 콘솔, 신호등(ESP32 프로토콜), 화면, 음성, 관리자 알림 | Pi C |
 
 ### 7.2 지켜야 할 규칙
 
 ```
- node ──▶ common ◀── hub ──(VerdictOutput 틀로만)──▶ ui ──▶ common
+ node ──▶ common ◀── hub
+             ▲
+             └────── ui      (출력 틀 Output·VerdictOutput은 common/output_api.py)
 ```
 
 1. **`node`와 `hub`·`ui`는 서로 import하지 않습니다.** 양쪽에 필요한 것은 `common`으로 옮깁니다.
 2. **메시지 형식은 `common`에만 둡니다.** 보내는 쪽(node)과 받는 쪽(hub)이 반드시 같은 코드를 써야 하기 때문입니다. 복사본을 만들지 않습니다.
-3. **`hub`는 `ui`를 `VerdictOutput` 틀로만 부릅니다.** 화면·음성 같은 개별 출력을 hub가 직접 알지 않으므로, 출력을 추가하거나 바꿔도 판정 코드는 그대로입니다.
+3. **`hub`는 `ui`를 import하지 않습니다.** hub는 `common`의 출력 틀(`VerdictOutput`)과 등록부만 알고, 설정 파일에 적힌 이름으로 출력을 만듭니다. 구현체는 `ui`가 등록합니다. 그래서 화면·음성 같은 출력을 추가하거나 바꿔도 판정 코드는 그대로입니다.
 4. **`common`을 바꾸면 4대 모두 영향을 받습니다.** 테스트를 통과한 뒤 4대를 같은 커밋으로 한꺼번에 업데이트합니다.
 
 ### 7.3 각 Pi가 받는 것: 코드는 통째로, 설치는 역할별로
@@ -254,7 +256,7 @@ tests/            자동 테스트 (common · node · hub · ui · 통합)
 | 1 | `common` + 테스트 | 완료 (공통 계층 8개 모듈: 메시지 형식·UDP 전송·노드 수신 관리·시계·설정·판정 종류, 테스트 34개) |
 | 2a | `node` 판단 파이프라인: 영상 입력, YOLO 검출(ONNX·Coral), 화면 상태 검사, 상태 판단(FSM), 감시 영역, 재확인 응답 | 완료 (테스트 50개) |
 | 2b | `node` 실행부: 실행기, 보고 송신, 출력(콘솔·화면 표시), 실행 진입점, 설정 파일, 시나리오 | 완료 (누적 테스트 170개, 시나리오 9개, 실시간 테스트 9개). 출력 인터페이스는 Pi C와 함께 쓰므로 `common/output_api.py` |
-| 3 | `hub` + 테스트 | 예정 |
+| 3 | `hub`: 수신 관리·신선도 검사·종합 규칙·판정 주기 실행 | 완료 (hub 테스트 29개, 누적 199개). 출력 틀 `VerdictOutput`을 `common/output_api.py`에 두어 hub가 ui를 import하지 않음 |
 | 4 | `ui` (판정 콘솔, 신호등 ESP32 프로토콜·시리얼 출력) + 테스트 | 예정 |
 | 5 | `sim` · `tools` + 통합 테스트 | 예정 |
 | 6~ | 새 기능: RGB 노드, picamera2 입력, 화면, 음성, 관리자 알림 | 예정 |
