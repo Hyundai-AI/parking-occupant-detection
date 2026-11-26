@@ -1,0 +1,38 @@
+# 파이프라인 설정 (DESIGN.md §9)
+# 교체 가능한 부품: `name`으로 구현체를 고르고, `options`는 그 생성자로 전달된다.
+
+source:
+  name: dummy               # dummy | video | webcam (picamera2 예정)
+  options:
+    scenario: scenarios/entry_normal.yaml
+    width: 640
+    height: 480
+
+model:
+  name: dummy               # dummy | yolo_onnx | ...
+  options: {}
+
+outputs:
+  - name: console           # console | viewer (신호등 ESP32 출력은 Pi C의 ui에서)
+    options: {}
+
+fsm:
+  person_conf_low: 0.30
+  clear_time_s: 3.0
+  clear_min_frames: 10
+  max_frame_age_ms: 500
+  fault_recover_frames: 5
+  roi: [[0.1, 0.1], [0.9, 0.1], [0.9, 0.9], [0.1, 0.9]]
+
+health:
+  min_brightness: 10
+  max_brightness: 245
+  freeze_diff_threshold: 0.5
+  freeze_frames: 1
+
+runner:
+  mode: sync                # sync | threaded
+  clock: auto               # auto | real | fake
+  heartbeat_ms: 200
+  max_decision_age_ms: 600
+  metrics_interval_s: 5
