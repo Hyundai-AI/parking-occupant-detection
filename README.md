@@ -38,14 +38,15 @@
 
 ```mermaid
 flowchart TD
-    A[측면 NoIR 카메라 A] --> C[Raspberry Pi 4 A]
-    B[측면 NoIR 카메라 B] --> D[Raspberry Pi 4 B]
+    A[측면 NoIR 카메라 A] --> C[Raspberry Pi 4 A<br/>내부 인원 감지]
+    B[측면 NoIR 카메라 B] --> D[Raspberry Pi 4 B<br/>내부 인원 감지]
     L[NIR 조명] -. 차량 내부 조사 .-> A
     L -. 차량 내부 조사 .-> B
-    E[RGB 카메라] --> F[외부 인원 및 앞좌석 감지 보완]
-    C --> G[감지 결과 통합 및 상태 판단]
-    D --> G
-    F --> G
+    E[RGB 카메라] --> F[Raspberry Pi 4 RGB<br/>외부 인원 및 앞좌석 감지 보완]
+    C -- 유선 --> N((네트워크))
+    D -- 유선 --> N
+    F -- Wi-Fi --> N
+    N -- Wi-Fi --> G[Raspberry Pi 4 C<br/>감지 결과 통합 및 잔류 인원 판정]
     G --> H[외부 터치스크린]
     G --> I[3색 LED 및 스피커]
     G --> J[모의 운전 제한 신호]
@@ -76,7 +77,7 @@ flowchart TD
 
 | 구분 | 구성 | 비고 |
 | --- | --- | --- |
-| Edge Device | Raspberry Pi 4 | 2대 기본안 |
+| Edge Device | Raspberry Pi 4 | 4대: 카메라 노드 3대(NoIR A·B, RGB) + 판정·출력 1대(C) |
 | Interior Camera | Raspberry Pi NoIR Camera | 2대 기본안, 차량 측면 |
 | Exterior Camera | RGB Camera | 수량 및 위치 검토 중 |
 | Illumination | NIR LED | 카메라 하단 배치 |
