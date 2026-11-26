@@ -1,0 +1,73 @@
+# CI: main으로 가는 PR과 main push마다 자동 테스트 + 시뮬레이션 시나리오를 돌린다.
+#
+# 아직 이 레포에 코드(pyproject.toml)가 없으면 테스트 단계는 건너뛰고 통과로 끝난다.
+# 코드를 옮겨 오면 따로 고치지 않아도 바로 테스트가 돈다.
+# (작업 이름이 처음부터 같으므로, 브랜치 보호의 "필수 검사"로 미리 지정해 둘 수 있다.)
+#
+# 러너 구성 (os × python = 4개 작업)
+#   ubuntu-24.04      x86_64. 개발 PC와 같은 계열
+#   ubuntu-24.04-arm  aarch64. Raspberry Pi 4(64비트 OS)와 같은 CPU 계열 → ARM용 패키지 문제를 미리 잡는다
+#   python 3.13       카메라 Pi 기본 (Debian 13 trixie)
+#   python 3.12       Coral을 꽂는 Pi (tflite-runtime 때문에 3.12)
+#
+# 실제 Pi가 아니므로 카메라·Coral·발열·Wi-Fi는 여기서 확인할 수 없다 (실기 시험은 따로).
+name: CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    name: test (${{ matrix.os }}, py${{ matrix.python }})
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-24.04-arm]
+        python: ["3.12", "3.13"]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: 코드 확인
+        if: hashFiles('pyproject.toml') == ''
+        run: echo "::notice::pyproject.toml이 아직 없어 테스트를 건너뜁니다 (문서만 있는 상태)."
+
+      - uses: actions/setup-python@v5
+        if: hashFiles('pyproject.toml') != ''
+        with:
+          python-version: ${{ matrix.python }}
+          cache: pip
+          cache-dependency-path: pyproject.toml
+
+      # opencv-python이 화면 라이브러리(libGL)를 찾는다. Pi에서는 headless 판으로 대신했다.
+      - name: 시스템 라이브러리
+        if: hashFiles('pyproject.toml') != ''
+        run: sudo apt-get update && sudo apt-get install -y --no-install-recommends libgl1
+
+      - name: 설치
+        if: hashFiles('pyproject.toml') != ''
+        run: |
+          python -m pip install --upgrade pip
+          pip install -e ".[dev,onnx]"
+
+      # 기본 테스트 (실시간 'slow' 테스트는 pyproject 설정으로 제외됨)
+      - name: 자동 테스트
+        if: hashFiles('pyproject.toml') != ''
+        run: pytest -q
+
+      # 가상 시나리오 전체: 각 시나리오의 기대 판정(expect)과 안전 불변식을 검사
+      - name: 시뮬레이션 시나리오
+        if: hashFiles('pyproject.toml') != '' && hashFiles('scenarios/*.yaml') != ''
+        run: python -m psafe --scenario "scenarios/*.yaml" --check -q

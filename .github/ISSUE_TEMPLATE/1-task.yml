@@ -1,0 +1,51 @@
+name: 작업
+description: 만들거나 고칠 일 (코드, 하드웨어, 문서, 실험)
+title: "[작업] "
+labels: ["작업"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: 영역
+      description: 어느 부분의 일인가요? (여러 개 선택 가능)
+      multiple: true
+      options:
+        - 카메라 Pi (A·B·RGB 공통)
+        - 판정 Pi (C)
+        - 화면 · 음성 · 관리자 알림
+        - 신호등 (ESP32)
+        - 모델 · 데이터
+        - 하드웨어 · 배선
+        - 문서
+        - CI · 배포
+    validations:
+      required: true
+  - type: textarea
+    id: why
+    attributes:
+      label: 왜 필요한가요?
+      placeholder: 예) 실제 Pi 카메라(CSI)로 영상을 받아야 실기 시험을 할 수 있다.
+    validations:
+      required: true
+  - type: textarea
+    id: todo
+    attributes:
+      label: 할 일
+      placeholder: |
+        - [ ] picamera2로 프레임을 받는 Source 만들기
+        - [ ] node_a.yaml에서 선택할 수 있게 등록
+    validations:
+      required: true
+  - type: textarea
+    id: done
+    attributes:
+      label: 완료 기준
+      description: 이게 되면 끝났다고 볼 수 있는 조건. 누가 봐도 확인할 수 있게 적어 주세요.
+      placeholder: 예) Pi A에서 15 fps로 10분 동안 프레임이 끊기지 않는다. CI 통과.
+    validations:
+      required: true
+  - type: input
+    id: related
+    attributes:
+      label: 관련 결정 · 문서
+      placeholder: 예) DEC-004, ACT-005, ARCHITECTURE.md §3

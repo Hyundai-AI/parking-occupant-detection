@@ -1,0 +1,40 @@
+name: 결정 필요
+description: 팀이 함께 정해야 하는 설계·운영 문제
+title: "[결정] "
+labels: ["결정 필요"]
+body:
+  - type: textarea
+    id: question
+    attributes:
+      label: 정해야 할 것
+      placeholder: 예) RGB Pi 보고가 끊기면 전체를 판단 불가(UNKNOWN)로 볼까, "외부 확인 불가"만 표시할까?
+    validations:
+      required: true
+  - type: textarea
+    id: options
+    attributes:
+      label: 선택지
+      description: 각 선택지의 장단점. 특히 안전에 어떤 영향이 있는지 적어 주세요.
+      placeholder: |
+        1. ... — 장점 / 단점 / 안전 영향
+        2. ... — 장점 / 단점 / 안전 영향
+    validations:
+      required: true
+  - type: textarea
+    id: opinion
+    attributes:
+      label: 현재 의견 · 근거
+      description: 추천안이 있으면 근거(실험 결과, 문서)와 함께 적어 주세요.
+  - type: input
+    id: related
+    attributes:
+      label: 관련 결정 · 문서
+      placeholder: 예) DEC-005, ARCHITECTURE.md §9 #2
+  - type: input
+    id: deadline
+    attributes:
+      label: 언제까지 정해야 하나요?
+      placeholder: 예) 12/3 실차 촬영 전
+  - type: markdown
+    attributes:
+      value: 결정이 나면 결과를 이 이슈에 댓글로 남기고 `DECISIONS.md`에 반영한 뒤 닫습니다.
