@@ -8,6 +8,7 @@
     messages.py   보드 간 메시지 Report / Control, encode / decode (순수)
     transport.py  전송 인터페이스, UdpTransport, LoopbackNetwork (I/O)
     peer.py       PeerTracker: 노드별 중복 제거·재시작·무응답 판정 (순수)
+    output_api.py 출력 틀: Output(카메라 Pi 판단용), VerdictOutput(Pi C 판정용)과 등록부
 
 규칙: node · hub · ui는 서로 import하지 않고, 함께 필요한 것만 여기에 둔다.
 메시지 형식은 보내는 쪽과 받는 쪽이 반드시 같은 코드를 써야 하므로 이곳에만 둔다.

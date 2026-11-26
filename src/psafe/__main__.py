@@ -83,14 +83,18 @@ def _run_node(cfg, args: argparse.Namespace) -> int:
 
 
 def _run_hub(cfg, args: argparse.Namespace) -> int:
-    """판정 Pi (C)."""
+    """판정 Pi (C): hub가 판정하고, 출력은 ui의 구현체를 이름으로 골라 만든다."""
+    from psafe.hub import HubRunner, build_hub
     try:
-        from psafe.hub import HubRunner, build_hub
-    except ModuleNotFoundError as e:
-        logging.error("hub 계층(psafe.hub)을 찾을 수 없습니다: %s", e)
-        return 2
+        import psafe.ui  # noqa: F401  (출력 구현체 등록용 import)
+    except ModuleNotFoundError:
+        logging.warning("ui 계층(psafe.ui)이 없어 등록된 출력이 없습니다")
     try:
         hub = build_hub(cfg)
+    except KeyError as e:         # 설정의 출력 이름이 등록되어 있지 않음
+        logging.error("config error: %s", e)
+        return 2
+    try:
         result = HubRunner(hub, max_seconds=args.seconds).run()
     except OSError as e:          # 포트 사용 중 등
         logging.error("startup failed: %s", e)

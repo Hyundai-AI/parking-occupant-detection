@@ -22,7 +22,9 @@ node = ["opencv-python-headless", "onnxruntime"]
 tflite = ["tflite-runtime"]
 # 최신 Python / Windows에서 TFLite 실행 (Edge TPU delegate 호환은 미검증)
 litert = ["ai-edge-litert"]
-# hub / ui 그룹은 각 계층을 구성할 때 추가한다
+# 판정 Pi (C) 판정부: 추가 라이브러리 없음 (순수 Python)
+hub = []
+# ui 그룹은 출력 계층을 구성할 때 추가한다
 
 [tool.setuptools.packages.find]
 where = ["src"]
