@@ -1,7 +1,7 @@
 # CI: main으로 가는 PR과 main push마다 자동 테스트 + 시뮬레이션 시나리오를 돌린다.
 #
 # 아직 이 레포에 코드(pyproject.toml)가 없으면 테스트 단계는 건너뛰고 통과로 끝난다.
-# 코드를 옮겨 오면 따로 고치지 않아도 바로 테스트가 돈다.
+# 코드가 추가되면 따로 고치지 않아도 바로 테스트가 돈다.
 # (작업 이름이 처음부터 같으므로, 브랜치 보호의 "필수 검사"로 미리 지정해 둘 수 있다.)
 #
 # 러너 구성 (os × python = 4개 작업)
@@ -60,7 +60,7 @@ jobs:
         if: hashFiles('pyproject.toml') != ''
         run: |
           python -m pip install --upgrade pip
-          pip install -e ".[dev,onnx]"
+          pip install -e ".[dev,node,hub,ui]"   # 아직 없는 그룹은 경고만 내고 건너뜀
 
       # 기본 테스트 (실시간 'slow' 테스트는 pyproject 설정으로 제외됨)
       - name: 자동 테스트

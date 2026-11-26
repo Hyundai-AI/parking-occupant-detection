@@ -1,0 +1,27 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "psafe"
+version = "0.1.0"
+description = "기계식 주차장 차량 내 잔류 인원 감지 시스템 (Pi 4대: 카메라 노드 3 + 판정 허브 1)"
+requires-python = ">=3.11"
+# 기본 의존성 = common이 쓰는 것만. 역할별 라이브러리는 아래 그룹으로 나눈다 (docs/ARCHITECTURE.md §7.3)
+dependencies = [
+    "numpy",
+    "pyyaml",
+]
+
+[project.optional-dependencies]
+dev = ["pytest"]
+# node / hub / ui 그룹은 각 계층을 구성할 때 추가한다
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+# tests/<영역>/ 아래에 같은 이름의 파일이 생길 수 있으므로 importlib 방식으로 모은다
+addopts = "-m 'not slow' --import-mode=importlib"
+markers = ["slow: real-time tests (threaded scenarios). Run with: pytest -m slow"]
