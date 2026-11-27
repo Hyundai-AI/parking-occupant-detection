@@ -14,7 +14,13 @@ hub:
   metrics_interval_s: 5
 
 outputs:
-  - name: console                 # 디스플레이 자리 (기종 미정)
+  - name: console                 # 판정 로그
     options: {}
-  - name: decision                # LED 자리: 기존 ESP32 Output을 감싼다. 실기는 output: serial
-    options: { output: mock_mcu }
+  - name: state_server            # 출력 상태 서버: 출력 Pi(D)의 화면·신호등·음성이 여기에 접속 (docs/UI_SCREEN.md)
+    options:
+      bind: 127.0.0.1:8080        # 실기: 0.0.0.0:8080 (D가 C의 IP로 접속)
+      static_dir: web/screen      # 화면 HTML·JS·CSS (화면 담당이 작성)
+      exterior: [RGB]             # 외부 인원 카메라 이름. 나머지는 내부
+      occupied_block_s: null      # OCCUPIED가 이만큼 계속되면 BLOCKED (DEC-007 미정 -> 사용 안 함)
+      voice_repeat_s: {}          # 예: { OCCUPIED: 10 }
+      voice_gap_s: 3.0

@@ -1,0 +1,17 @@
+# 출력 Pi (D): 판정하지 않는다. C의 상태 서버를 받아 신호등·음성으로 그대로 출력한다 (docs/UI_SCREEN.md §4).
+# 화면은 이 프로그램이 아니라 Chromium이 C에 직접 접속한다:
+#   chromium --kiosk --noerrdialogs --disable-infobars http://<C 주소>:8080/
+#
+# PC 한 대에서 시험: hub_c.yaml과 함께 실행 (C 주소 127.0.0.1). 실기: server를 C의 IP로.
+
+output_client:
+  server: http://127.0.0.1:8080
+  stale_ms: 1000          # C의 메시지가 이보다 오래 없으면 빨간 신호등 + "확인할 수 없습니다"
+  heartbeat_ms: 200       # ESP32에 보내는 주기 (워치독 500 ms보다 짧게)
+  reconnect_s: 1.0
+
+sinks:
+  - name: light           # 신호등. 실기: { output: serial, options: { port: /dev/ttyUSB0 } }
+    options: { output: mock_mcu }
+  - name: voice           # 음성. 실기: { player: command, options: { directory: assets/voice } }
+    options: { player: log }

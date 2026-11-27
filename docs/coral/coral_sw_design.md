@@ -8,7 +8,7 @@
 > **현재 상태 (2026-11-26)**
 > - **구현됨** (사전 MVP 단계 코드): Coral 검출기 `yolo_tflite`(`delegate: edgetpu | none`), 런타임 `tpu_runtime.py`, 모델 명세 `manifest.py`(파일 sha256 검사), 공통 후처리 `yolo_common.py`, 점검 도구 `tpucheck`, `bench`의 `.tflite` 지원, `fatal_stale_s`, 설치 그룹(`.[tflite]`, `.[litert]`, `requirements/tpu-py312.txt`). 테스트 `tests/test_tflite.py`(가짜 엔진으로 양자화·명세 검사·delegate 실패 등).
 > - **남음**: 실제 Coral 장치 인식(노트북 USB에서 아직 인식 안 됨), §6 T0-1 모델 변환·컴파일 로그 비교, `tools/build_edgetpu.py`, `tools/evalmodel.py`, 두 환경(3.12/3.13) 동시 테스트, systemd 서비스 파일, T1·T2 전체.
-> - 구조 변경: 현재는 **Pi 4대**(카메라 Pi 3대 + 판정 Pi 1대)이고 Coral은 1개이므로 카메라 Pi 중 한 대에만 꽂는다(§7 D1). 본문의 "3-보드"는 사전 MVP 당시 구조다.
+> - 구조 변경: 현재는 **Pi 5대**(카메라 Pi 3대 + 판정 Pi 1대 + 출력 Pi 1대)이고 Coral은 1개이므로 카메라 Pi 중 한 대에만 꽂는다(§7 D1). 본문의 "3-보드"는 사전 MVP 당시 구조다.
 > - 코드 경로(`src/psafe/...`)는 코드를 이 저장소로 옮긴 뒤의 위치다. 그 전까지는 해당 파일이 이 저장소에 없다.
 
 ---

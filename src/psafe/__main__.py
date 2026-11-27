@@ -8,6 +8,9 @@
 판정 Pi (C): 설정 파일에 `hub:` 절이 있으면 허브로 실행한다.
     python -m psafe --config config/hub_c.yaml
 
+출력 Pi (D): 설정 파일에 `output_client:` 절이 있으면 출력 프로그램으로 실행한다 (판정하지 않음).
+    python -m psafe --config config/output_d.yaml
+
 가상 시나리오 검사 (개발 PC · CI)
     python -m psafe --scenario scenarios/flicker.yaml --check
     python -m psafe --scenario "scenarios/*.yaml" --check                    (전체, 즉시 실행)
@@ -49,6 +52,8 @@ def main(argv: list[str] | None = None) -> int:
         data = read_yaml(args.config)
         if is_hub_config(data):
             return _run_hub(parse_hub_config(data), args)
+        if "output_client" in data:
+            return _run_output(data, args)
         cfg = parse_config(data)
     except (ConfigError, FileNotFoundError, ValueError) as e:
         logging.error("config error: %s", e)
@@ -100,6 +105,21 @@ def _run_hub(cfg, args: argparse.Namespace) -> int:
         logging.error("startup failed: %s", e)
         return 2
     return 1 if result.error else 0
+
+
+def _run_output(data, args: argparse.Namespace) -> int:
+    """출력 Pi (D): C의 상태를 받아 신호등·음성으로 출력만 한다."""
+    from psafe.ui.client import OutputApp, parse_output_config
+    try:
+        app = OutputApp(parse_output_config(data))
+    except (KeyError, ValueError) as e:          # 등록되지 않은 sink 이름, 잘못된 설정
+        logging.error("config error: %s", e)
+        return 2
+    try:
+        return app.run(max_seconds=args.seconds)
+    except (OSError, RuntimeError) as e:         # 시리얼 포트 열기 실패 등
+        logging.error("startup failed: %s", e)
+        return 2
 
 
 def _run_scenarios(args: argparse.Namespace) -> int:

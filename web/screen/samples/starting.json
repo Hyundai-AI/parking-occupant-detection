@@ -1,0 +1,30 @@
+{
+  "v": 1,
+  "seq": 0,
+  "sent_at": "2026-12-03T14:03:21.120+09:00",
+  "state": "STARTING",
+  "display": {
+    "level": "BLOCKED",
+    "color": "red",
+    "title": "확인할 수 없습니다",
+    "message": "시스템을 시작하는 중입니다.",
+    "action": null
+  },
+  "voice": {
+    "name": null,
+    "seq": 0
+  },
+  "signal": {
+    "light": "red",
+    "permit": false
+  },
+  "verdict": {
+    "kind": "UNKNOWN",
+    "reason": "starting"
+  },
+  "nodes": [],
+  "estimate": {
+    "interior": null,
+    "exterior": null
+  }
+}
