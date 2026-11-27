@@ -5,7 +5,7 @@
 > 현대 AI Campus · 온디바이스 AI 프로젝트  
 > Team. 멈춰조 · 2026.11.20 ~ 2026.12.10
 
-`On-Device AI` `Computer Vision` `Raspberry Pi 4` `Near-Infrared` `Blender`
+`On-Device AI` `Computer Vision` `Raspberry Pi 4` `Near-Infrared` `Blender`GHG
 
 ## 1. 프로젝트 소개
 
