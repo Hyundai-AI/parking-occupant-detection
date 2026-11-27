@@ -5,7 +5,7 @@
 > 현대 AI Campus · 온디바이스 AI 프로젝트  
 > Team. 멈춰조 · 2026.11.20 ~ 2026.12.10
 
-`On-Device AI` `Computer Vision` `Raspberry Pi 4` `Near-Infrared` `Blender`GHG
+`On-Device AI` `Computer Vision` `Raspberry Pi 4` `Near-Infrared` `Blender`
 
 ## 1. 프로젝트 소개
 
@@ -48,9 +48,10 @@ flowchart TD
     D -- 유선 --> N
     F -- Wi-Fi --> N
     N -- Wi-Fi --> G[Raspberry Pi 4 C<br/>감지 결과 통합 및 잔류 인원 판정]
-    G --> H[외부 터치스크린]
-    G --> I[3색 LED 및 스피커]
-    G --> J[모의 운전 제한 신호]
+    G -- HTTP --> O[Raspberry Pi 4 D<br/>출력: 판정 결과 표시만 담당]
+    O --> H[외부 터치스크린]
+    O --> I[3색 LED 및 스피커]
+    O --> J[모의 운전 제한 신호]
     H --> K[SOS 관리자 호출]
 ```
 
@@ -78,7 +79,7 @@ flowchart TD
 
 | 구분 | 구성 | 비고 |
 | --- | --- | --- |
-| Edge Device | Raspberry Pi 4 | 4대: 카메라 노드 3대(NoIR A·B, RGB) + 판정·출력 1대(C) |
+| Edge Device | Raspberry Pi 4 | 5대: 카메라 노드 3대(NoIR A·B, RGB) + 판정 1대(C) + 출력 1대(D) |
 | Interior Camera | Raspberry Pi NoIR Camera | 2대 기본안, 차량 측면 |
 | Exterior Camera | RGB Camera | 수량 및 위치 검토 중 |
 | Illumination | NIR LED | 카메라 하단 배치 |
@@ -169,7 +170,8 @@ Raspberry Pi 4와 고사양 PC에서 동일한 모델과 입력 데이터를 사
 | 문서 | 내용 |
 | --- | --- |
 | [DECISIONS.md](./DECISIONS.md) | 기술 및 설계 의사결정, 결정 근거, 검증 항목, 후속 작업, 변경 이력 |
-| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템 구조: Pi 4대의 역할과 연결, 판단 원칙, 상태와 판정, 출력·관리자 알림, **코드 폴더 구조와 Pi별 설치·배포 규칙**, 아직 정하지 않은 항목 |
+| [docs/ARCHITECTURE.md](./docs/ARCHITECTURE.md) | 시스템 구조: Pi 5대의 역할과 연결, 판단 원칙, 상태와 판정, 출력·관리자 알림, **코드 폴더 구조와 Pi별 설치·배포 규칙**, 아직 정하지 않은 항목 |
+| [docs/UI_SCREEN.md](./docs/UI_SCREEN.md) | 화면·출력 연결 규격: 판정 Pi(C) → 출력 Pi(D) 통신(SSE), 상태 JSON v1, 화면·음성·신호등이 지켜야 할 안전 규칙 |
 | [docs/EXPERIMENTS.md](./docs/EXPERIMENTS.md) | 엣지 케이스와 실험 기록: Pi 4 추론 성능, ESP32 워치독, 보드 간 통신(UDP 채택, Wi-Fi 지연) |
 | [docs/coral/edge_tpu_research.md](./docs/coral/edge_tpu_research.md) | 비교군 모델과 Edge TPU INT8 변환 조사, Pi 4 + Coral 실행 제약 |
 | [docs/coral/coral_sw_design.md](./docs/coral/coral_sw_design.md) | Coral 소프트웨어 설계: 변환·배포 파이프라인, 검출기 구조, 시험 계획과 현재 상태 |

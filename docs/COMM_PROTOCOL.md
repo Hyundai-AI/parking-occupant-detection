@@ -33,7 +33,7 @@
 
 | 항목 | v2 |
 | --- | --- |
-| 구성 | 카메라 Pi(A·B, + RGB) → 판정 Pi C. C가 터치스크린·스피커·신호등(ESP32, 시리얼)을 직접 맡는다 |
+| 구성 | 카메라 Pi(A·B, + RGB) → 판정 Pi C → 출력 Pi D. D가 터치스크린·스피커·신호등(ESP32, 시리얼)을 맡고, C → D는 HTTP(SSE, [UI_SCREEN.md](UI_SCREEN.md)) |
 | 전송 | UDP, JSON 1개 = 데이터그램 1개, **최대 512 B**(코드 상한, Report 약 300 B). EXP-012에서 UDP 채택: 끊긴 뒤 옛 메시지가 몰려 오지 않음 |
 | 주기 | 노드 → C `Report` 200 ms, C → 노드 `Control` 200 ms. 판단이 안 바뀌어도 계속 보냄 (하트비트 겸용) |
 | `Report` | `node`, `boot`, `seq`, `state`(노드 FSM), `safe`, `count`, `reason`, `evidence_age_ms`, `confirm_id`, `confirm`, `echo_seq`, `echo_hold_ms`, `crc` |
@@ -136,7 +136,7 @@ C와 RGB가 Wi-Fi라서 **모든 보고가 Wi-Fi 구간을 지난다** (DEC-005)
 1. **핫스팟 Wi-Fi를 모든 Pi에 미리 등록한다.** 현장에서는 Pi에 접속할 방법이 없으므로 반드시 출발 전에 한다:
    `sudo nmcli connection add type wifi con-name hotspot ssid "<핫스팟 이름>" wifi-sec.key-mgmt wpa-psk wifi-sec.psk "<비밀번호>" connection.autoconnect-priority 10` (비밀번호는 각자 입력. 우선순위를 학교 Wi-Fi보다 높게 해 핫스팟이 켜져 있으면 그쪽에 붙게 한다)
 2. 이 연결에도 W1(절전 끔)을 적용한다.
-3. **같은 휴대폰으로 학교에서 리허설한다:** Pi 4대 + 노트북을 핫스팟에 붙이고 ① 5대 동시 접속이 되는지(기종마다 최대 접속 수가 다름) ② Pi끼리 `ping`이 되는지 ③ 실제 `psafe` C·노드를 띄워 보고가 오가는지(UDP) 확인한다. **일부 핫스팟은 기기끼리 통신을 막는다(격리).** 막히면 그 휴대폰으로는 진행할 수 없으므로 다른 기종을 쓴다.
+3. **같은 휴대폰으로 학교에서 리허설한다:** Pi 5대 + 노트북을 핫스팟에 붙이고 ① 6대 동시 접속이 되는지(기종마다 최대 접속 수가 다름) ② Pi끼리 `ping`이 되는지 ③ 실제 `psafe` C·노드를 띄워 보고가 오가는지(UDP) 확인한다. **일부 핫스팟은 기기끼리 통신을 막는다(격리).** 막히면 그 휴대폰으로는 진행할 수 없으므로 다른 기종을 쓴다.
 4. 모든 설정 파일의 `bind`를 `0.0.0.0:<포트>`로 둔다 (PC 시험용 `127.0.0.1`이면 다른 Pi의 메시지를 받지 못한다).
 
 ### 4.2 현장에서
