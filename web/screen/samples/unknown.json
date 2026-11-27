@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "seq": 104,
+  "sent_at": "2026-12-03T14:03:21.120+09:00",
+  "state": "UNKNOWN",
+  "display": {
+    "level": "BLOCKED",
+    "color": "red",
+    "title": "확인할 수 없습니다",
+    "message": "차량 내부를 확인할 수 없습니다. 잠시 기다려 주세요.",
+    "action": null
+  },
+  "voice": {
+    "name": "unknown",
+    "seq": 1
+  },
+  "signal": {
+    "light": "red",
+    "permit": false
+  },
+  "verdict": {
+    "kind": "UNKNOWN",
+    "reason": "A_timeout"
+  },
+  "nodes": [
+    {
+      "name": "A",
+      "role": "interior",
+      "alive": false,
+      "state": null,
+      "count": 0,
+      "reason": "timeout",
+      "evidence_age_ms": null
+    },
+    {
+      "name": "B",
+      "role": "interior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "RGB",
+      "role": "exterior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 1,
+      "reason": "clear",
+      "evidence_age_ms": 340.0
+    }
+  ],
+  "estimate": {
+    "interior": 0,
+    "exterior": 1
+  }
+}

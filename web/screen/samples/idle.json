@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "seq": 101,
+  "sent_at": "2026-12-03T14:03:21.120+09:00",
+  "state": "IDLE",
+  "display": {
+    "level": "IDLE",
+    "color": "green",
+    "title": "대기 중입니다",
+    "message": "차량 내부 확인이 끝났습니다.",
+    "action": null
+  },
+  "voice": {
+    "name": "idle",
+    "seq": 1
+  },
+  "signal": {
+    "light": "green",
+    "permit": true
+  },
+  "verdict": {
+    "kind": "EMPTY",
+    "reason": "confirmed"
+  },
+  "nodes": [
+    {
+      "name": "A",
+      "role": "interior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "B",
+      "role": "interior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "RGB",
+      "role": "exterior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 1,
+      "reason": "clear",
+      "evidence_age_ms": 340.0
+    }
+  ],
+  "estimate": {
+    "interior": 0,
+    "exterior": 1
+  }
+}

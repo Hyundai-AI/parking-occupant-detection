@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "seq": 102,
+  "sent_at": "2026-12-03T14:03:21.120+09:00",
+  "state": "CHECKING",
+  "display": {
+    "level": "WARNING",
+    "color": "yellow",
+    "title": "확인 중입니다",
+    "message": "잠시만 기다려 주세요.",
+    "action": null
+  },
+  "voice": {
+    "name": "checking",
+    "seq": 1
+  },
+  "signal": {
+    "light": "yellow",
+    "permit": false
+  },
+  "verdict": {
+    "kind": "CHECKING",
+    "reason": "A_verifying"
+  },
+  "nodes": [
+    {
+      "name": "A",
+      "role": "interior",
+      "alive": true,
+      "state": "VERIFYING",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "B",
+      "role": "interior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "RGB",
+      "role": "exterior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 1,
+      "reason": "clear",
+      "evidence_age_ms": 340.0
+    }
+  ],
+  "estimate": {
+    "interior": 0,
+    "exterior": 1
+  }
+}

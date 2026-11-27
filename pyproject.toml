@@ -5,7 +5,7 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "psafe"
 version = "0.1.0"
-description = "기계식 주차장 차량 내 잔류 인원 감지 시스템 (Pi 4대: 카메라 노드 3 + 판정 허브 1)"
+description = "기계식 주차장 차량 내 잔류 인원 감지 시스템 (Pi 5대: 카메라 노드 3 + 판정 허브 1 + 출력 1)"
 requires-python = ">=3.11"
 # 기본 의존성 = common이 쓰는 것만. 역할별 라이브러리는 아래 그룹으로 나눈다 (docs/ARCHITECTURE.md §7.3)
 dependencies = [
@@ -24,7 +24,8 @@ tflite = ["tflite-runtime"]
 litert = ["ai-edge-litert"]
 # 판정 Pi (C) 판정부: 추가 라이브러리 없음 (순수 Python)
 hub = []
-# ui 그룹은 출력 계층을 구성할 때 추가한다
+# 출력 계층 (C: 상태 서버·콘솔은 표준 라이브러리만 / D: 신호등 ESP32 시리얼)
+ui = ["pyserial"]
 
 [tool.setuptools.packages.find]
 where = ["src"]

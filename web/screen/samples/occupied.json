@@ -1,0 +1,58 @@
+{
+  "v": 1,
+  "seq": 103,
+  "sent_at": "2026-12-03T14:03:21.120+09:00",
+  "state": "OCCUPIED",
+  "display": {
+    "level": "WARNING",
+    "color": "yellow",
+    "title": "차량 안에 사람이 있습니다",
+    "message": "차량 내부를 확인해 주세요.",
+    "action": "check_inside"
+  },
+  "voice": {
+    "name": "occupied",
+    "seq": 1
+  },
+  "signal": {
+    "light": "yellow",
+    "permit": false
+  },
+  "verdict": {
+    "kind": "OCCUPIED",
+    "reason": "person_B"
+  },
+  "nodes": [
+    {
+      "name": "A",
+      "role": "interior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 0,
+      "reason": "clear",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "B",
+      "role": "interior",
+      "alive": true,
+      "state": "OCCUPIED",
+      "count": 1,
+      "reason": "person_in_roi",
+      "evidence_age_ms": 200.0
+    },
+    {
+      "name": "RGB",
+      "role": "exterior",
+      "alive": true,
+      "state": "CLEAR",
+      "count": 1,
+      "reason": "clear",
+      "evidence_age_ms": 340.0
+    }
+  ],
+  "estimate": {
+    "interior": 1,
+    "exterior": 1
+  }
+}

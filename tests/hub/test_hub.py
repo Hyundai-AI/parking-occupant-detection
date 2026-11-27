@@ -30,7 +30,7 @@ def hub_cfg(**hub):
 def test_repo_hub_config_loads():
     cfg = load_hub_config("config/hub_c.yaml")
     assert [n.name for n in cfg.hub.nodes] == ["A", "B"]
-    assert [o.name for o in cfg.outputs] == ["console", "decision"]
+    assert [o.name for o in cfg.outputs] == ["console", "state_server"]
 
 
 @pytest.mark.parametrize("hub", [
