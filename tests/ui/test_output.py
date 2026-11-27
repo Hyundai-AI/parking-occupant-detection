@@ -236,6 +236,11 @@ def test_repo_output_config_loads():
     assert [type(s).__name__ for s in app.sinks] == ["LightSink", "VoiceSink"]
 
 
+def test_server_exterior_default_and_empty_list():
+    assert StateServer(RealClock()).exterior == frozenset({"RGB"})
+    assert StateServer(RealClock(), exterior=[]).exterior == frozenset()   # 외부 카메라 없음
+
+
 # ---- C 상태 서버 <-> D (실제 HTTP, localhost) -------------------------------
 
 @pytest.fixture

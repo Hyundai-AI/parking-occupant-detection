@@ -8,6 +8,7 @@
 
 - [ ] 카메라 Pi (A·B·RGB)
 - [ ] 판정 Pi (C)
+- [ ] 출력 Pi (D)
 - [ ] ESP32 · 신호등
 - [ ] 없음 (문서 · 도구만)
 
@@ -19,6 +20,6 @@
 
 ## 안전 확인
 
-- [ ] 판단 로직(`safety/`, `link/`, `core/`)을 바꿨다 → 핵심 담당자 리뷰 필요
+- [ ] 판단 로직(`common/`, `node/`, `hub/`, 출력 규칙 `ui/contract.py` · `ui/output_fsm.py`)을 바꿨다 → 핵심 담당자 리뷰 필요
 - [ ] 판정 규칙이나 상태 이름이 바뀐다 → `ARCHITECTURE.md` · `DECISIONS.md`도 같이 고쳤다
 - [ ] 위 두 항목에 해당하지 않는다

@@ -86,7 +86,7 @@ class StateServer(VerdictOutput):
         self.clock = clock
         self.address = parse_address(bind)
         self.static_dir = Path(static_dir).resolve()
-        self.exterior = frozenset(exterior or ["RGB"])
+        self.exterior = frozenset(["RGB"] if exterior is None else exterior)
         self.fsm = OutputFsm(OutputFsmConfig(occupied_block_s, dict(voice_repeat_s or {}), voice_gap_s))
         self.max_clients = max_clients
         self._lock = threading.Lock()
